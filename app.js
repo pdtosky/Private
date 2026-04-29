@@ -1,5 +1,7 @@
 const API_STATE_URL = "/api/state";
 const LOCAL_STORAGE_KEY = "fabric-price-book-state-v1";
+const APP_CONFIG = window.APP_CONFIG || {};
+const BACKEND_MODE = APP_CONFIG.backend || "supabase";
 
 const TEXT = {
   formCreate: "\uC6D0\uB2E8 \uC815\uBCF4 \uC785\uB825",
@@ -82,9 +84,7 @@ async function initializeApp() {
 
 async function loadState() {
   try {
-    const response = await fetch(API_STATE_URL);
-    if (!response.ok) throw new Error("API unavailable");
-    const nextState = await response.json();
+    const nextState = isSupabaseBackend() ? await fetchSupabaseState() : await fetchApiState();
     state.fabrics = Array.isArray(nextState.fabrics) ? nextState.fabrics : [];
   } catch {
     backendAvailable = false;
@@ -105,12 +105,11 @@ async function persist() {
 
   if (backendAvailable) {
     try {
-      const response = await fetch(API_STATE_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error("Save failed");
+      if (isSupabaseBackend()) {
+        await saveSupabaseState(payload);
+      } else {
+        await saveApiState(payload);
+      }
       return;
     } catch {
       backendAvailable = false;
@@ -249,6 +248,94 @@ function exportCsv() {
 
 function toCsvCell(value) {
   return `"${String(value || "").replaceAll('"', '""')}"`;
+}
+
+function isSupabaseBackend() {
+  return BACKEND_MODE === "supabase";
+}
+
+function hasSupabaseConfig() {
+  return Boolean(APP_CONFIG.supabaseUrl && APP_CONFIG.supabaseAnonKey);
+}
+
+async function fetchApiState() {
+  const response = await fetch(API_STATE_URL);
+  if (!response.ok) throw new Error("API unavailable");
+  return response.json();
+}
+
+async function saveApiState(payload) {
+  const response = await fetch(API_STATE_URL, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error("Save failed");
+}
+
+function getSupabaseStateUrl() {
+  const baseUrl = String(APP_CONFIG.supabaseUrl || "").replace(/\/$/, "");
+  const table = APP_CONFIG.supabaseTable || "app_state";
+  const rowId = encodeURIComponent(APP_CONFIG.supabaseRowId || "fabric_price_book");
+  return `${baseUrl}/rest/v1/${table}?id=eq.${rowId}&select=payload`;
+}
+
+function getSupabaseTableUrl() {
+  const baseUrl = String(APP_CONFIG.supabaseUrl || "").replace(/\/$/, "");
+  const table = APP_CONFIG.supabaseTable || "app_state";
+  return `${baseUrl}/rest/v1/${table}`;
+}
+
+function getSupabaseHeaders(extra = {}) {
+  return {
+    apikey: APP_CONFIG.supabaseAnonKey,
+    Authorization: `Bearer ${APP_CONFIG.supabaseAnonKey}`,
+    "Content-Type": "application/json",
+    ...extra
+  };
+}
+
+async function fetchSupabaseState() {
+  if (!hasSupabaseConfig()) {
+    throw new Error("missing supabase config");
+  }
+
+  const response = await fetch(getSupabaseStateUrl(), {
+    headers: getSupabaseHeaders(),
+    cache: "no-store"
+  });
+  if (!response.ok) {
+    throw new Error("supabase state fetch failed");
+  }
+
+  const rows = await response.json();
+  if (!rows.length || !rows[0].payload) {
+    return { fabrics: [] };
+  }
+  return rows[0].payload;
+}
+
+async function saveSupabaseState(nextState) {
+  if (!hasSupabaseConfig()) {
+    throw new Error("missing supabase config");
+  }
+
+  const response = await fetch(getSupabaseTableUrl(), {
+    method: "POST",
+    headers: getSupabaseHeaders({
+      Prefer: "resolution=merge-duplicates,return=representation"
+    }),
+    body: JSON.stringify([
+      {
+        id: APP_CONFIG.supabaseRowId || "fabric_price_book",
+        payload: nextState
+      }
+    ])
+  });
+  if (!response.ok) {
+    throw new Error("supabase save failed");
+  }
+  return response.json();
 }
 
 function escapeHtml(value) {
