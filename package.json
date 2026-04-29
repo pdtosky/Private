@@ -1,0 +1,13 @@
+{
+  "name": "fabric-price-book",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fabric price book",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22 <23"
+  }
+}
