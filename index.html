@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&#50896;&#45800; &#44508;&#44201; &#48143; &#44032;&#44201; &#51221;&#47532;</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="app-header">
+      <div>
+        <p class="kicker">Fabric Price Book</p>
+        <h1>&#50896;&#45800; &#44508;&#44201; &#48143; &#44032;&#44201; &#51221;&#47532;</h1>
+      </div>
+      <div class="header-tools">
+        <button type="button" id="exportCsvBtn" class="ghost-btn" title="CSV &#45236;&#48372;&#45236;&#44592;">CSV</button>
+        <button type="button" id="printBtn" class="ghost-btn" title="&#51064;&#49604;">&#51064;&#49604;</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel entry-panel">
+        <div class="panel-head">
+          <div>
+            <p class="kicker">Input</p>
+            <h2 id="formTitle">&#50896;&#45800; &#51221;&#48372; &#51077;&#47141;</h2>
+          </div>
+          <button type="button" id="cancelEditBtn" class="text-btn" hidden>&#49688;&#51221; &#52712;&#49548;</button>
+        </div>
+
+        <form id="fabricForm" class="fabric-form">
+          <input type="hidden" id="fabricId" name="fabricId" />
+
+          <label>
+            &#44277;&#44553;&#50629;&#52404;
+            <input type="text" id="supplier" name="supplier" placeholder="&#50696;: &#51652;&#55141;&#47924;&#50669;" required />
+          </label>
+
+          <label>
+            &#50896;&#45800;&#44508;&#44201;
+            <input type="text" id="spec" name="spec" placeholder="&#50696;: 58&quot; / 210D / &#48169;&#49688;" required />
+          </label>
+
+          <label>
+            &#50896;&#45800;&#47749;
+            <input type="text" id="fabricName" name="fabricName" placeholder="&#50696;: &#54260;&#47532; &#50725;&#49828;&#54252;&#46300;" required />
+          </label>
+
+          <label>
+            &#45800;&#44032;
+            <input type="text" id="unitPrice" name="unitPrice" inputmode="decimal" placeholder="&#50696;: 3,500&#50896; / yd" required />
+          </label>
+
+          <label class="wide-field">
+            &#48708;&#44256;
+            <textarea id="note" name="note" rows="4" placeholder="&#49353;&#49345;, &#52572;&#49548;&#49688;&#47049;, &#45225;&#44592;, &#53945;&#51060;&#49324;&#54637; &#46321;"></textarea>
+          </label>
+
+          <button type="submit" class="primary-btn" id="saveBtn">&#46321;&#47197;</button>
+        </form>
+      </section>
+
+      <section class="panel list-panel">
+        <div class="panel-head list-head">
+          <div>
+            <p class="kicker">List</p>
+            <h2>&#46321;&#47197;&#46108; &#50896;&#45800;&#54364;</h2>
+          </div>
+          <strong id="itemCount" class="count-chip">0&#44148;</strong>
+        </div>
+
+        <div class="filter-bar">
+          <input type="search" id="searchInput" placeholder="&#44277;&#44553;&#50629;&#52404;, &#50896;&#45800;&#47749;, &#44508;&#44201;, &#48708;&#44256; &#44160;&#49353;" />
+          <select id="supplierFilter" aria-label="&#44277;&#44553;&#50629;&#52404; &#54596;&#53552;">
+            <option value="">&#51204;&#52404; &#44277;&#44553;&#50629;&#52404;</option>
+          </select>
+        </div>
+
+        <div class="table-wrap mobile-card-table">
+          <table>
+            <thead>
+              <tr>
+                <th>&#44277;&#44553;&#50629;&#52404;</th>
+                <th>&#50896;&#45800;&#44508;&#44201;</th>
+                <th>&#50896;&#45800;&#47749;</th>
+                <th>&#45800;&#44032;</th>
+                <th>&#48708;&#44256;</th>
+                <th>&#44288;&#47532;</th>
+              </tr>
+            </thead>
+            <tbody id="fabricTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty-state" hidden>
+          &#46321;&#47197;&#46108; &#50896;&#45800; &#51221;&#48372;&#44032; &#50630;&#49845;&#45768;&#45796;.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
