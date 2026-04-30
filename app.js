@@ -13,7 +13,8 @@ const TEXT = {
   selectedItem: "\uC120\uD0DD \uD56D\uBAA9",
   deleteConfirmSuffix: "\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694?",
   supplier: "\uACF5\uAE09\uC5C5\uCCB4",
-  spec: "\uC6D0\uB2E8\uADDC\uACA9",
+  widthMm: "\uC804\uD3ED(mm)",
+  lengthM: "\uBBF8\uD130(M)",
   fabricName: "\uC6D0\uB2E8\uBA85",
   unitPrice: "\uB2E8\uAC00",
   note: "\uBE44\uACE0",
@@ -32,7 +33,8 @@ const TEXT = {
 
 const EDITABLE_FIELDS = [
   ["supplier", TEXT.supplier],
-  ["spec", TEXT.spec],
+  ["widthMm", TEXT.widthMm],
+  ["lengthM", TEXT.lengthM],
   ["fabricName", TEXT.fabricName],
   ["unitPrice", TEXT.unitPrice],
   ["note", TEXT.note]
@@ -48,7 +50,8 @@ let backendAvailable = true;
 const fabricForm = document.getElementById("fabricForm");
 const fabricIdInput = document.getElementById("fabricId");
 const supplierInput = document.getElementById("supplier");
-const specInput = document.getElementById("spec");
+const widthMmInput = document.getElementById("widthMm");
+const lengthMInput = document.getElementById("lengthM");
 const fabricNameInput = document.getElementById("fabricName");
 const unitPriceInput = document.getElementById("unitPrice");
 const noteInput = document.getElementById("note");
@@ -113,14 +116,14 @@ async function initializeApp() {
 async function loadState() {
   try {
     const nextState = isSupabaseBackend() ? await fetchSupabaseState() : await fetchApiState();
-    state.fabrics = Array.isArray(nextState.fabrics) ? nextState.fabrics : [];
+    state.fabrics = Array.isArray(nextState.fabrics) ? nextState.fabrics.map(normalizeFabricItem) : [];
   } catch {
     backendAvailable = false;
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
       try {
         const nextState = JSON.parse(saved);
-        state.fabrics = Array.isArray(nextState.fabrics) ? nextState.fabrics : [];
+        state.fabrics = Array.isArray(nextState.fabrics) ? nextState.fabrics.map(normalizeFabricItem) : [];
       } catch {
         state.fabrics = [];
       }
@@ -154,7 +157,8 @@ async function handleSubmit(event) {
   const nextFields = {
     id: editingId || crypto.randomUUID(),
     supplier: supplierInput.value.trim(),
-    spec: specInput.value.trim(),
+    widthMm: widthMmInput.value.trim(),
+    lengthM: lengthMInput.value.trim(),
     fabricName: fabricNameInput.value.trim(),
     unitPrice: unitPriceInput.value.trim(),
     note: noteInput.value.trim()
@@ -202,7 +206,8 @@ function startEdit(item) {
   editingId = item.id;
   fabricIdInput.value = item.id;
   supplierInput.value = item.supplier || "";
-  specInput.value = item.spec || "";
+  widthMmInput.value = item.widthMm || item.spec || "";
+  lengthMInput.value = item.lengthM || "";
   fabricNameInput.value = item.fabricName || "";
   unitPriceInput.value = item.unitPrice || "";
   noteInput.value = item.note || "";
@@ -231,6 +236,15 @@ function resetForm() {
   formTitle.textContent = TEXT.formCreate;
   saveBtn.textContent = TEXT.saveCreate;
   cancelEditBtn.hidden = true;
+}
+
+function normalizeFabricItem(item) {
+  return {
+    ...item,
+    widthMm: item.widthMm || item.spec || "",
+    lengthM: item.lengthM || "",
+    editHistory: Array.isArray(item.editHistory) ? item.editHistory : []
+  };
 }
 
 function render() {
@@ -262,7 +276,9 @@ function getFilteredFabrics() {
 
   return state.fabrics.filter((item) => {
     const matchesSupplier = !supplier || item.supplier === supplier;
-    const haystack = [item.supplier, item.spec, item.fabricName, item.unitPrice, item.note].join(" ").toLowerCase();
+    const haystack = [item.supplier, item.widthMm, item.lengthM, item.spec, item.fabricName, item.unitPrice, item.note]
+      .join(" ")
+      .toLowerCase();
     const matchesKeyword = !keyword || haystack.includes(keyword);
     return matchesSupplier && matchesKeyword;
   });
@@ -273,7 +289,8 @@ function renderRow(item) {
   return `
     <tr>
       <td data-label="${TEXT.supplier}">${escapeHtml(item.supplier)}</td>
-      <td data-label="${TEXT.spec}">${escapeHtml(item.spec)}</td>
+      <td data-label="${TEXT.widthMm}">${escapeHtml(item.widthMm || item.spec)}</td>
+      <td data-label="${TEXT.lengthM}">${escapeHtml(item.lengthM)}</td>
       <td data-label="${TEXT.fabricName}">${escapeHtml(item.fabricName)}</td>
       <td data-label="${TEXT.unitPrice}" class="price-cell">${escapeHtml(item.unitPrice)}</td>
       <td data-label="${TEXT.note}" class="note-cell">${escapeHtml(item.note || "-")}</td>
@@ -366,8 +383,8 @@ function formatDateTime(value) {
 function exportCsv() {
   const rows = getFilteredFabrics();
   const csvRows = [
-    [TEXT.supplier, TEXT.spec, TEXT.fabricName, TEXT.unitPrice, TEXT.note],
-    ...rows.map((item) => [item.supplier, item.spec, item.fabricName, item.unitPrice, item.note])
+    [TEXT.supplier, TEXT.widthMm, TEXT.lengthM, TEXT.fabricName, TEXT.unitPrice, TEXT.note],
+    ...rows.map((item) => [item.supplier, item.widthMm || item.spec, item.lengthM, item.fabricName, item.unitPrice, item.note])
   ];
   const csv = csvRows.map((row) => row.map(toCsvCell).join(",")).join("\r\n");
   const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
