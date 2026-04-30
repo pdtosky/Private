@@ -18,6 +18,11 @@ const TEXT = {
   fabricName: "\uC6D0\uB2E8\uBA85",
   sqUnitPrice: "1SQ \uB2E8\uAC00",
   unitPrice: "\uACC4\uC0B0\uB2E8\uAC00",
+  thickness: "\uB450\uAED8",
+  color: "\uC0C9\uC0C1",
+  adhesion: "\uC810\uCC29\uB825",
+  releaseForce: "\uC774\uD615\uB825",
+  detail: "\uC0C1\uC138\uC815\uBCF4",
   note: "\uBE44\uACE0",
   manage: "\uAD00\uB9AC",
   edit: "\uC218\uC815",
@@ -38,6 +43,10 @@ const EDITABLE_FIELDS = [
   ["lengthM", TEXT.lengthM],
   ["fabricName", TEXT.fabricName],
   ["sqUnitPrice", TEXT.sqUnitPrice],
+  ["thickness", TEXT.thickness],
+  ["color", TEXT.color],
+  ["adhesion", TEXT.adhesion],
+  ["releaseForce", TEXT.releaseForce],
   ["note", TEXT.note]
 ];
 
@@ -56,6 +65,10 @@ const lengthMInput = document.getElementById("lengthM");
 const fabricNameInput = document.getElementById("fabricName");
 const sqUnitPriceInput = document.getElementById("sqUnitPrice");
 const unitPriceInput = document.getElementById("unitPrice");
+const thicknessInput = document.getElementById("thickness");
+const colorInput = document.getElementById("color");
+const adhesionInput = document.getElementById("adhesion");
+const releaseForceInput = document.getElementById("releaseForce");
 const noteInput = document.getElementById("note");
 const fabricTableBody = document.getElementById("fabricTableBody");
 const searchInput = document.getElementById("searchInput");
@@ -167,6 +180,10 @@ async function handleSubmit(event) {
     fabricName: fabricNameInput.value.trim(),
     sqUnitPrice: sqUnitPriceInput.value.trim(),
     unitPrice: calculateUnitPrice(widthMmInput.value, lengthMInput.value, sqUnitPriceInput.value),
+    thickness: thicknessInput.value.trim(),
+    color: colorInput.value.trim(),
+    adhesion: adhesionInput.value.trim(),
+    releaseForce: releaseForceInput.value.trim(),
     note: noteInput.value.trim()
   };
 
@@ -217,6 +234,10 @@ function startEdit(item) {
   fabricNameInput.value = item.fabricName || "";
   sqUnitPriceInput.value = item.sqUnitPrice || item.unitPrice || "";
   unitPriceInput.value = calculateUnitPrice(widthMmInput.value, lengthMInput.value, sqUnitPriceInput.value) || item.unitPrice || "";
+  thicknessInput.value = item.thickness || "";
+  colorInput.value = item.color || "";
+  adhesionInput.value = item.adhesion || "";
+  releaseForceInput.value = item.releaseForce || "";
   noteInput.value = item.note || "";
   formTitle.textContent = TEXT.formEdit;
   saveBtn.textContent = TEXT.saveEdit;
@@ -252,6 +273,10 @@ function normalizeFabricItem(item) {
     lengthM: item.lengthM || "",
     sqUnitPrice: item.sqUnitPrice || item.unitPrice || "",
     unitPrice: calculateUnitPrice(item.widthMm || item.spec || "", item.lengthM || "", item.sqUnitPrice || item.unitPrice || "") || item.unitPrice || "",
+    thickness: item.thickness || "",
+    color: item.color || "",
+    adhesion: item.adhesion || "",
+    releaseForce: item.releaseForce || "",
     editHistory: Array.isArray(item.editHistory) ? item.editHistory : []
   };
 }
@@ -285,7 +310,20 @@ function getFilteredFabrics() {
 
   return state.fabrics.filter((item) => {
     const matchesSupplier = !supplier || item.supplier === supplier;
-    const haystack = [item.supplier, item.widthMm, item.lengthM, item.spec, item.fabricName, item.sqUnitPrice, item.unitPrice, item.note]
+    const haystack = [
+      item.supplier,
+      item.widthMm,
+      item.lengthM,
+      item.spec,
+      item.fabricName,
+      item.sqUnitPrice,
+      item.unitPrice,
+      item.thickness,
+      item.color,
+      item.adhesion,
+      item.releaseForce,
+      item.note
+    ]
       .join(" ")
       .toLowerCase();
     const matchesKeyword = !keyword || haystack.includes(keyword);
@@ -303,6 +341,7 @@ function renderRow(item) {
       <td data-label="${TEXT.fabricName}">${escapeHtml(item.fabricName)}</td>
       <td data-label="${TEXT.sqUnitPrice}" class="price-cell">${escapeHtml(item.sqUnitPrice || item.unitPrice)}</td>
       <td data-label="${TEXT.unitPrice}" class="price-cell">${escapeHtml(item.unitPrice)}</td>
+      <td data-label="${TEXT.detail}" class="detail-cell">${renderDetailCell(item)}</td>
       <td data-label="${TEXT.note}" class="note-cell">${escapeHtml(item.note || "-")}</td>
       <td data-label="${TEXT.manage}">
         <div class="row-actions">
@@ -313,6 +352,20 @@ function renderRow(item) {
       </td>
     </tr>
   `;
+}
+
+function renderDetailCell(item) {
+  const details = [
+    [TEXT.thickness, item.thickness],
+    [TEXT.color, item.color],
+    [TEXT.adhesion, item.adhesion],
+    [TEXT.releaseForce, item.releaseForce]
+  ].filter(([, value]) => value);
+
+  if (!details.length) return "-";
+  return details
+    .map(([label, value]) => `<span><b>${escapeHtml(label)}</b> ${escapeHtml(value)}</span>`)
+    .join("");
 }
 
 function getFieldChanges(previousItem, nextItem) {
@@ -419,8 +472,32 @@ function formatNumber(value) {
 function exportCsv() {
   const rows = getFilteredFabrics();
   const csvRows = [
-    [TEXT.supplier, TEXT.widthMm, TEXT.lengthM, TEXT.fabricName, TEXT.sqUnitPrice, TEXT.unitPrice, TEXT.note],
-    ...rows.map((item) => [item.supplier, item.widthMm || item.spec, item.lengthM, item.fabricName, item.sqUnitPrice || item.unitPrice, item.unitPrice, item.note])
+    [
+      TEXT.supplier,
+      TEXT.widthMm,
+      TEXT.lengthM,
+      TEXT.fabricName,
+      TEXT.sqUnitPrice,
+      TEXT.unitPrice,
+      TEXT.thickness,
+      TEXT.color,
+      TEXT.adhesion,
+      TEXT.releaseForce,
+      TEXT.note
+    ],
+    ...rows.map((item) => [
+      item.supplier,
+      item.widthMm || item.spec,
+      item.lengthM,
+      item.fabricName,
+      item.sqUnitPrice || item.unitPrice,
+      item.unitPrice,
+      item.thickness,
+      item.color,
+      item.adhesion,
+      item.releaseForce,
+      item.note
+    ])
   ];
   const csv = csvRows.map((row) => row.map(toCsvCell).join(",")).join("\r\n");
   const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
