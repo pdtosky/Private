@@ -149,6 +149,7 @@ textarea:focus {
 .ghost-btn,
 .text-btn,
 .icon-btn,
+.history-btn,
 .danger-btn {
   border: 1px solid transparent;
   border-radius: 14px;
@@ -168,10 +169,16 @@ textarea:focus {
 }
 
 .ghost-btn,
-.icon-btn {
+.icon-btn,
+.history-btn {
   background: rgba(255, 255, 255, 0.72);
   border-color: var(--line);
   color: var(--ink);
+}
+
+.history-btn {
+  background: var(--brand-soft);
+  color: var(--brand-dark);
 }
 
 .text-btn {
@@ -258,9 +265,76 @@ tbody tr:last-child td {
 }
 
 .icon-btn,
+.history-btn,
 .danger-btn {
   min-width: 48px;
   padding-inline: 11px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: rgba(13, 27, 42, 0.36);
+  padding: 18px;
+}
+
+.history-modal {
+  width: min(760px, 100%);
+  max-height: min(760px, 90vh);
+  overflow: auto;
+  background: var(--paper);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.history-entry {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 14px;
+}
+
+.history-change-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.history-change {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.history-field {
+  color: var(--brand-dark);
+  font-weight: 900;
+}
+
+.history-change b {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sub);
+  font-size: 0.78rem;
+}
+
+.history-change p {
+  min-height: 38px;
+  border-radius: 10px;
+  background: #f6f9fb;
+  padding: 9px 10px;
+  line-height: 1.45;
 }
 
 .empty-state {
@@ -376,7 +450,11 @@ tbody tr:last-child td {
 
   .row-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .history-change {
+    grid-template-columns: 1fr;
   }
 }
 
