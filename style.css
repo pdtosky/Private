@@ -89,7 +89,7 @@ h2 {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.42fr);
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -109,8 +109,9 @@ h2 {
 
 .fabric-form {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 13px;
+  grid-template-columns: minmax(120px, 1fr) minmax(90px, 0.7fr) minmax(80px, 0.65fr) minmax(130px, 1.05fr) minmax(95px, 0.75fr) minmax(110px, 0.8fr) minmax(150px, 1.25fr) auto;
+  gap: 12px;
+  align-items: end;
 }
 
 label {
@@ -134,7 +135,8 @@ textarea {
 }
 
 textarea {
-  min-height: 110px;
+  min-height: 46px;
+  height: 46px;
   resize: vertical;
 }
 
@@ -146,7 +148,7 @@ textarea:focus {
 }
 
 .wide-field {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .primary-btn,
@@ -163,9 +165,10 @@ textarea:focus {
 }
 
 .primary-btn {
-  grid-column: 1 / -1;
   background: var(--brand);
   color: #fff;
+  align-self: end;
+  min-width: 78px;
 }
 
 .primary-btn:hover {
@@ -241,6 +244,7 @@ td {
   text-align: left;
   vertical-align: top;
   font-size: 0.9rem;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
@@ -257,42 +261,42 @@ tbody tr:last-child td {
 
 th:nth-child(1),
 td:nth-child(1) {
-  width: 12%;
+  width: 11%;
 }
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 11%;
+  width: 10%;
 }
 
 th:nth-child(3),
 td:nth-child(3) {
-  width: 10%;
+  width: 9%;
 }
 
 th:nth-child(4),
 td:nth-child(4) {
-  width: 16%;
+  width: 15%;
 }
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 12%;
+  width: 10%;
 }
 
 th:nth-child(6),
 td:nth-child(6) {
-  width: 13%;
+  width: 12%;
 }
 
 th:nth-child(7),
 td:nth-child(7) {
-  width: 9%;
+  width: 20%;
 }
 
 th:nth-child(8),
 td:nth-child(8) {
-  width: 17%;
+  width: 13%;
 }
 
 .price-cell {
@@ -303,10 +307,12 @@ td:nth-child(8) {
 
 .note-cell {
   color: var(--sub);
+  white-space: pre-line;
 }
 
 .row-actions {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -410,6 +416,16 @@ td:nth-child(8) {
   }
 }
 
+@media (max-width: 1180px) {
+  .fabric-form {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .wide-field {
+    grid-column: span 3;
+  }
+}
+
 @media (max-width: 680px) {
   .page-shell {
     padding: 16px;
@@ -437,6 +453,10 @@ td:nth-child(8) {
 
   .fabric-form {
     grid-template-columns: 1fr;
+  }
+
+  .wide-field {
+    grid-column: auto;
   }
 
   .filter-bar select {
