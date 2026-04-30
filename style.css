@@ -244,6 +244,7 @@ table {
 th,
 td {
   padding: 14px 10px;
+  border-right: 1px solid rgba(28, 57, 82, 0.14);
   border-bottom: 1px solid var(--line);
   text-align: center;
   vertical-align: middle;
@@ -252,6 +253,11 @@ td {
   font-weight: 700;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+
+th:last-child,
+td:last-child {
+  border-right: 0;
 }
 
 th {
@@ -354,6 +360,11 @@ td:nth-child(9) {
   white-space: nowrap;
   overflow-wrap: normal;
   vertical-align: middle;
+}
+
+.note-cell,
+.detail-cell span {
+  max-width: 100%;
 }
 
 .row-actions {
@@ -602,6 +613,7 @@ td:nth-child(9) {
     gap: 14px;
     align-items: center;
     border-bottom: 0;
+    border-right: 0;
     padding: 9px 0;
     text-align: left;
     font-size: 1rem;
@@ -630,6 +642,7 @@ td:nth-child(9) {
   .detail-cell span {
     margin: 0;
     padding: 5px 9px;
+    white-space: normal;
   }
 
   .mobile-card-table td:last-child {
