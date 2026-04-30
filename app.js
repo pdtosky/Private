@@ -20,8 +20,23 @@ const TEXT = {
   manage: "\uAD00\uB9AC",
   edit: "\uC218\uC815",
   delete: "\uC0AD\uC81C",
+  history: "\uC774\uB825",
+  close: "\uB2EB\uAE30",
+  noHistory: "\uC218\uC815\uC774\uB825\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+  historyTitle: "\uC218\uC815\uC774\uB825",
+  changedAt: "\uC218\uC815\uC77C\uC2DC",
+  before: "\uBCC0\uACBD \uC804",
+  after: "\uBCC0\uACBD \uD6C4",
   csvFilename: "\uC6D0\uB2E8_\uADDC\uACA9_\uAC00\uACA9\uD45C"
 };
+
+const EDITABLE_FIELDS = [
+  ["supplier", TEXT.supplier],
+  ["spec", TEXT.spec],
+  ["fabricName", TEXT.fabricName],
+  ["unitPrice", TEXT.unitPrice],
+  ["note", TEXT.note]
+];
 
 const state = {
   fabrics: []
@@ -47,6 +62,10 @@ const saveBtn = document.getElementById("saveBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
 const printBtn = document.getElementById("printBtn");
+const historyModal = document.getElementById("historyModal");
+const historyModalTitle = document.getElementById("historyModalTitle");
+const historyModalBody = document.getElementById("historyModalBody");
+const historyCloseBtn = document.getElementById("historyCloseBtn");
 
 bindEvents();
 initializeApp();
@@ -58,6 +77,10 @@ function bindEvents() {
   cancelEditBtn.addEventListener("click", resetForm);
   exportCsvBtn.addEventListener("click", exportCsv);
   printBtn.addEventListener("click", () => window.print());
+  historyCloseBtn.addEventListener("click", closeHistoryModal);
+  historyModal.addEventListener("click", (event) => {
+    if (event.target === historyModal) closeHistoryModal();
+  });
 
   fabricTableBody.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
@@ -73,6 +96,11 @@ function bindEvents() {
 
     if (button.dataset.action === "delete") {
       deleteItem(item.id);
+      return;
+    }
+
+    if (button.dataset.action === "history") {
+      openHistoryModal(item);
     }
   });
 }
@@ -121,20 +149,47 @@ async function persist() {
 
 async function handleSubmit(event) {
   event.preventDefault();
+  const now = new Date().toISOString();
 
-  const item = {
+  const nextFields = {
     id: editingId || crypto.randomUUID(),
     supplier: supplierInput.value.trim(),
     spec: specInput.value.trim(),
     fabricName: fabricNameInput.value.trim(),
     unitPrice: unitPriceInput.value.trim(),
-    note: noteInput.value.trim(),
-    updatedAt: new Date().toISOString()
+    note: noteInput.value.trim()
   };
 
   if (editingId) {
+    const previousItem = state.fabrics.find((fabric) => fabric.id === editingId);
+    const changes = getFieldChanges(previousItem, nextFields);
+    const editHistory = Array.isArray(previousItem?.editHistory) ? [...previousItem.editHistory] : [];
+
+    if (changes.length) {
+      editHistory.unshift({
+        id: crypto.randomUUID(),
+        editedAt: now,
+        before: pickEditableFields(previousItem),
+        after: pickEditableFields(nextFields),
+        changes
+      });
+    }
+
+    const item = {
+      ...previousItem,
+      ...nextFields,
+      createdAt: previousItem?.createdAt || now,
+      updatedAt: now,
+      editHistory
+    };
     state.fabrics = state.fabrics.map((fabric) => (fabric.id === editingId ? item : fabric));
   } else {
+    const item = {
+      ...nextFields,
+      createdAt: now,
+      updatedAt: now,
+      editHistory: []
+    };
     state.fabrics.unshift(item);
   }
 
@@ -214,6 +269,7 @@ function getFilteredFabrics() {
 }
 
 function renderRow(item) {
+  const historyCount = Array.isArray(item.editHistory) ? item.editHistory.length : 0;
   return `
     <tr>
       <td data-label="${TEXT.supplier}">${escapeHtml(item.supplier)}</td>
@@ -224,11 +280,87 @@ function renderRow(item) {
       <td data-label="${TEXT.manage}">
         <div class="row-actions">
           <button type="button" class="icon-btn" data-action="edit" data-id="${escapeAttr(item.id)}">${TEXT.edit}</button>
+          <button type="button" class="history-btn" data-action="history" data-id="${escapeAttr(item.id)}">${TEXT.history} ${historyCount}</button>
           <button type="button" class="danger-btn" data-action="delete" data-id="${escapeAttr(item.id)}">${TEXT.delete}</button>
         </div>
       </td>
     </tr>
   `;
+}
+
+function getFieldChanges(previousItem, nextItem) {
+  return EDITABLE_FIELDS.reduce((changes, [key, label]) => {
+    const beforeValue = String(previousItem?.[key] || "");
+    const afterValue = String(nextItem?.[key] || "");
+    if (beforeValue !== afterValue) {
+      changes.push({
+        field: key,
+        label,
+        before: beforeValue,
+        after: afterValue
+      });
+    }
+    return changes;
+  }, []);
+}
+
+function pickEditableFields(item) {
+  return EDITABLE_FIELDS.reduce((picked, [key]) => {
+    picked[key] = String(item?.[key] || "");
+    return picked;
+  }, {});
+}
+
+function openHistoryModal(item) {
+  const history = Array.isArray(item.editHistory) ? item.editHistory : [];
+  historyModalTitle.textContent = `${TEXT.historyTitle} - ${item.fabricName || item.supplier || TEXT.selectedItem}`;
+
+  if (!history.length) {
+    historyModalBody.innerHTML = `<div class="empty-state">${TEXT.noHistory}</div>`;
+  } else {
+    historyModalBody.innerHTML = history.map(renderHistoryItem).join("");
+  }
+
+  historyModal.hidden = false;
+}
+
+function closeHistoryModal() {
+  historyModal.hidden = true;
+}
+
+function renderHistoryItem(entry) {
+  const changes = Array.isArray(entry.changes) ? entry.changes : [];
+  return `
+    <article class="history-entry">
+      <strong>${TEXT.changedAt}: ${escapeHtml(formatDateTime(entry.editedAt))}</strong>
+      <div class="history-change-list">
+        ${changes.map(renderHistoryChange).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderHistoryChange(change) {
+  return `
+    <div class="history-change">
+      <span class="history-field">${escapeHtml(change.label || change.field || "")}</span>
+      <div><b>${TEXT.before}</b><p>${escapeHtml(change.before || "-")}</p></div>
+      <div><b>${TEXT.after}</b><p>${escapeHtml(change.after || "-")}</p></div>
+    </div>
+  `;
+}
+
+function formatDateTime(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 function exportCsv() {
