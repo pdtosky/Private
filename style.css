@@ -244,8 +244,8 @@ th,
 td {
   padding: 12px 10px;
   border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
+  text-align: center;
+  vertical-align: middle;
   font-size: 0.9rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -311,6 +311,7 @@ td:nth-child(8) {
 .note-cell {
   color: var(--sub);
   white-space: pre-line;
+  text-align: center;
 }
 
 .row-actions {
