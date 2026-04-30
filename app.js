@@ -13,6 +13,7 @@ const TEXT = {
   selectedItem: "\uC120\uD0DD \uD56D\uBAA9",
   deleteConfirmSuffix: "\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694?",
   supplier: "\uACF5\uAE09\uC5C5\uCCB4",
+  fabricCompany: "\uC6D0\uB2E8\uC5C5\uCCB4",
   widthMm: "\uC804\uD3ED(mm)",
   lengthM: "\uBBF8\uD130(M)",
   fabricName: "\uC6D0\uB2E8\uBA85",
@@ -21,7 +22,7 @@ const TEXT = {
   thickness: "\uB450\uAED8",
   color: "\uC0C9\uC0C1",
   adhesion: "\uC810\uCC29\uB825",
-  releaseForce: "\uC774\uD615\uB825",
+  releaseForce: "\uC774\uD615\uB825(g)",
   detail: "\uC0C1\uC138\uC815\uBCF4",
   note: "\uBE44\uACE0",
   manage: "\uAD00\uB9AC",
@@ -39,6 +40,7 @@ const TEXT = {
 
 const EDITABLE_FIELDS = [
   ["supplier", TEXT.supplier],
+  ["fabricCompany", TEXT.fabricCompany],
   ["widthMm", TEXT.widthMm],
   ["lengthM", TEXT.lengthM],
   ["fabricName", TEXT.fabricName],
@@ -60,6 +62,7 @@ let backendAvailable = true;
 const fabricForm = document.getElementById("fabricForm");
 const fabricIdInput = document.getElementById("fabricId");
 const supplierInput = document.getElementById("supplier");
+const fabricCompanyInput = document.getElementById("fabricCompany");
 const widthMmInput = document.getElementById("widthMm");
 const lengthMInput = document.getElementById("lengthM");
 const fabricNameInput = document.getElementById("fabricName");
@@ -175,6 +178,7 @@ async function handleSubmit(event) {
   const nextFields = {
     id: editingId || crypto.randomUUID(),
     supplier: supplierInput.value.trim(),
+    fabricCompany: fabricCompanyInput.value.trim(),
     widthMm: widthMmInput.value.trim(),
     lengthM: lengthMInput.value.trim(),
     fabricName: fabricNameInput.value.trim(),
@@ -229,6 +233,7 @@ function startEdit(item) {
   editingId = item.id;
   fabricIdInput.value = item.id;
   supplierInput.value = item.supplier || "";
+  fabricCompanyInput.value = item.fabricCompany || "";
   widthMmInput.value = item.widthMm || item.spec || "";
   lengthMInput.value = item.lengthM || "";
   fabricNameInput.value = item.fabricName || "";
@@ -269,6 +274,7 @@ function resetForm() {
 function normalizeFabricItem(item) {
   return {
     ...item,
+    fabricCompany: item.fabricCompany || "",
     widthMm: item.widthMm || item.spec || "",
     lengthM: item.lengthM || "",
     sqUnitPrice: item.sqUnitPrice || item.unitPrice || "",
@@ -312,6 +318,7 @@ function getFilteredFabrics() {
     const matchesSupplier = !supplier || item.supplier === supplier;
     const haystack = [
       item.supplier,
+      item.fabricCompany,
       item.widthMm,
       item.lengthM,
       item.spec,
@@ -356,6 +363,7 @@ function renderRow(item) {
 
 function renderDetailCell(item) {
   const details = [
+    [TEXT.fabricCompany, item.fabricCompany],
     [TEXT.thickness, item.thickness],
     [TEXT.color, item.color],
     [TEXT.adhesion, item.adhesion],
@@ -474,6 +482,7 @@ function exportCsv() {
   const csvRows = [
     [
       TEXT.supplier,
+      TEXT.fabricCompany,
       TEXT.widthMm,
       TEXT.lengthM,
       TEXT.fabricName,
@@ -487,6 +496,7 @@ function exportCsv() {
     ],
     ...rows.map((item) => [
       item.supplier,
+      item.fabricCompany,
       item.widthMm || item.spec,
       item.lengthM,
       item.fabricName,
