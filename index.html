@@ -100,6 +100,19 @@
     </main>
   </div>
 
+  <div class="modal-backdrop" id="historyModal" hidden>
+    <section class="history-modal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="panel-head">
+        <div>
+          <p class="kicker">History</p>
+          <h2 id="historyModalTitle">&#49688;&#51221;&#51060;&#47141;</h2>
+        </div>
+        <button type="button" id="historyCloseBtn" class="text-btn">&#45803;&#44592;</button>
+      </div>
+      <div id="historyModalBody" class="history-list"></div>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
