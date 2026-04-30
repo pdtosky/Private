@@ -16,7 +16,8 @@ const TEXT = {
   widthMm: "\uC804\uD3ED(mm)",
   lengthM: "\uBBF8\uD130(M)",
   fabricName: "\uC6D0\uB2E8\uBA85",
-  unitPrice: "\uB2E8\uAC00",
+  sqUnitPrice: "1SQ \uB2E8\uAC00",
+  unitPrice: "\uACC4\uC0B0\uB2E8\uAC00",
   note: "\uBE44\uACE0",
   manage: "\uAD00\uB9AC",
   edit: "\uC218\uC815",
@@ -36,7 +37,7 @@ const EDITABLE_FIELDS = [
   ["widthMm", TEXT.widthMm],
   ["lengthM", TEXT.lengthM],
   ["fabricName", TEXT.fabricName],
-  ["unitPrice", TEXT.unitPrice],
+  ["sqUnitPrice", TEXT.sqUnitPrice],
   ["note", TEXT.note]
 ];
 
@@ -53,6 +54,7 @@ const supplierInput = document.getElementById("supplier");
 const widthMmInput = document.getElementById("widthMm");
 const lengthMInput = document.getElementById("lengthM");
 const fabricNameInput = document.getElementById("fabricName");
+const sqUnitPriceInput = document.getElementById("sqUnitPrice");
 const unitPriceInput = document.getElementById("unitPrice");
 const noteInput = document.getElementById("note");
 const fabricTableBody = document.getElementById("fabricTableBody");
@@ -75,6 +77,9 @@ initializeApp();
 
 function bindEvents() {
   fabricForm.addEventListener("submit", handleSubmit);
+  [widthMmInput, lengthMInput, sqUnitPriceInput].forEach((input) => {
+    input.addEventListener("input", updateCalculatedUnitPrice);
+  });
   searchInput.addEventListener("input", render);
   supplierFilter.addEventListener("change", render);
   cancelEditBtn.addEventListener("click", resetForm);
@@ -160,7 +165,8 @@ async function handleSubmit(event) {
     widthMm: widthMmInput.value.trim(),
     lengthM: lengthMInput.value.trim(),
     fabricName: fabricNameInput.value.trim(),
-    unitPrice: unitPriceInput.value.trim(),
+    sqUnitPrice: sqUnitPriceInput.value.trim(),
+    unitPrice: calculateUnitPrice(widthMmInput.value, lengthMInput.value, sqUnitPriceInput.value),
     note: noteInput.value.trim()
   };
 
@@ -209,7 +215,8 @@ function startEdit(item) {
   widthMmInput.value = item.widthMm || item.spec || "";
   lengthMInput.value = item.lengthM || "";
   fabricNameInput.value = item.fabricName || "";
-  unitPriceInput.value = item.unitPrice || "";
+  sqUnitPriceInput.value = item.sqUnitPrice || item.unitPrice || "";
+  unitPriceInput.value = calculateUnitPrice(widthMmInput.value, lengthMInput.value, sqUnitPriceInput.value) || item.unitPrice || "";
   noteInput.value = item.note || "";
   formTitle.textContent = TEXT.formEdit;
   saveBtn.textContent = TEXT.saveEdit;
@@ -243,6 +250,8 @@ function normalizeFabricItem(item) {
     ...item,
     widthMm: item.widthMm || item.spec || "",
     lengthM: item.lengthM || "",
+    sqUnitPrice: item.sqUnitPrice || item.unitPrice || "",
+    unitPrice: calculateUnitPrice(item.widthMm || item.spec || "", item.lengthM || "", item.sqUnitPrice || item.unitPrice || "") || item.unitPrice || "",
     editHistory: Array.isArray(item.editHistory) ? item.editHistory : []
   };
 }
@@ -276,7 +285,7 @@ function getFilteredFabrics() {
 
   return state.fabrics.filter((item) => {
     const matchesSupplier = !supplier || item.supplier === supplier;
-    const haystack = [item.supplier, item.widthMm, item.lengthM, item.spec, item.fabricName, item.unitPrice, item.note]
+    const haystack = [item.supplier, item.widthMm, item.lengthM, item.spec, item.fabricName, item.sqUnitPrice, item.unitPrice, item.note]
       .join(" ")
       .toLowerCase();
     const matchesKeyword = !keyword || haystack.includes(keyword);
@@ -292,6 +301,7 @@ function renderRow(item) {
       <td data-label="${TEXT.widthMm}">${escapeHtml(item.widthMm || item.spec)}</td>
       <td data-label="${TEXT.lengthM}">${escapeHtml(item.lengthM)}</td>
       <td data-label="${TEXT.fabricName}">${escapeHtml(item.fabricName)}</td>
+      <td data-label="${TEXT.sqUnitPrice}" class="price-cell">${escapeHtml(item.sqUnitPrice || item.unitPrice)}</td>
       <td data-label="${TEXT.unitPrice}" class="price-cell">${escapeHtml(item.unitPrice)}</td>
       <td data-label="${TEXT.note}" class="note-cell">${escapeHtml(item.note || "-")}</td>
       <td data-label="${TEXT.manage}">
@@ -380,11 +390,37 @@ function formatDateTime(value) {
   });
 }
 
+function updateCalculatedUnitPrice() {
+  unitPriceInput.value = calculateUnitPrice(widthMmInput.value, lengthMInput.value, sqUnitPriceInput.value);
+}
+
+function calculateUnitPrice(widthMm, lengthM, sqUnitPrice) {
+  const width = parseNumber(widthMm);
+  const length = parseNumber(lengthM);
+  const price = parseNumber(sqUnitPrice);
+  if (!width || !length || !price) return "";
+  const total = (width / 1000) * length * price;
+  return formatNumber(total);
+}
+
+function parseNumber(value) {
+  const normalized = String(value || "").replace(/,/g, "").replace(/[^\d.-]/g, "");
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatNumber(value) {
+  const rounded = Math.round(value * 100) / 100;
+  return rounded.toLocaleString("ko-KR", {
+    maximumFractionDigits: Number.isInteger(rounded) ? 0 : 2
+  });
+}
+
 function exportCsv() {
   const rows = getFilteredFabrics();
   const csvRows = [
-    [TEXT.supplier, TEXT.widthMm, TEXT.lengthM, TEXT.fabricName, TEXT.unitPrice, TEXT.note],
-    ...rows.map((item) => [item.supplier, item.widthMm || item.spec, item.lengthM, item.fabricName, item.unitPrice, item.note])
+    [TEXT.supplier, TEXT.widthMm, TEXT.lengthM, TEXT.fabricName, TEXT.sqUnitPrice, TEXT.unitPrice, TEXT.note],
+    ...rows.map((item) => [item.supplier, item.widthMm || item.spec, item.lengthM, item.fabricName, item.sqUnitPrice || item.unitPrice, item.unitPrice, item.note])
   ];
   const csv = csvRows.map((row) => row.map(toCsvCell).join(",")).join("\r\n");
   const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
