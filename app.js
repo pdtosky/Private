@@ -21,7 +21,7 @@ const TEXT = {
   unitPrice: "\uACC4\uC0B0\uB2E8\uAC00",
   thickness: "\uB450\uAED8",
   color: "\uC0C9\uC0C1",
-  adhesion: "\uC810\uCC29\uB825",
+  adhesion: "\uC810\uCC29\uB825(g)",
   releaseForce: "\uC774\uD615\uB825(g)",
   detail: "\uC0C1\uC138\uC815\uBCF4",
   note: "\uBE44\uACE0",
