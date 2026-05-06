@@ -3,444 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&#49373;&#49328;&#51068;&#51221; &#44288;&#47532; &#45824;&#49884;&#48372;&#46300;</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=20260506-01" />
+  <title>&#50896;&#45800; &#44508;&#44201; &#48143; &#44032;&#44201; &#51221;&#47532;</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="page-shell">
-    <header class="hero">
-      <div class="hero-brand">
-        <h1>&#49373;&#49328;&#51068;&#51221; &#44288;&#47532;</h1>
-        <img src="company-logo.jpg" alt="&#51652;&#55141;&#47924;&#50669; &#47196;&#44256;" class="company-logo" />
+    <header class="app-header">
+      <div>
+        <p class="kicker">Fabric Price Book</p>
+        <h1>&#50896;&#45800; &#44508;&#44201; &#48143; &#44032;&#44201; &#51221;&#47532;</h1>
+      </div>
+      <div class="header-tools">
+        <button type="button" id="exportCsvBtn" class="ghost-btn" title="CSV &#45236;&#48372;&#45236;&#44592;">CSV</button>
+        <button type="button" id="printBtn" class="ghost-btn" title="&#51064;&#49604;">&#51064;&#49604;</button>
       </div>
     </header>
 
-    <nav class="page-tabs" aria-label="views">
-      <button type="button" class="tab-btn active" data-view-target="dashboardView">&#45824;&#49884;&#48372;&#46300;</button>
-      <button type="button" class="tab-btn" data-view-target="ordersView">&#48156;&#51452; &#51077;&#47141;</button>
-      <button type="button" class="tab-btn" data-view-target="workerView">&#51089;&#50629;&#51088; &#51077;&#47141;</button>
-      <button type="button" class="tab-btn" data-view-target="shippingView">&#52636;&#54616;</button>
-      <button type="button" class="tab-btn" data-view-target="adminView">&#44288;&#47532;&#51088; &#54168;&#51060;&#51648;</button>
-    </nav>
-
-    <main class="views-wrap">
-      <section class="view-panel active" id="dashboardView">
-        <section class="panel panel-dashboard">
-          <div class="panel-head">
-            <div>
-              <p class="panel-kicker">Dashboard</p>
-              <h2>&#51204;&#52404; &#51089;&#50629; &#54788;&#54889;</h2>
-            </div>
-            <div class="today-chip" id="todayChip"></div>
+    <main class="layout">
+      <section class="panel entry-panel">
+        <div class="panel-head">
+          <div>
+            <p class="kicker">Input</p>
+            <h2 id="formTitle">&#50896;&#45800; &#51221;&#48372; &#51077;&#47141;</h2>
           </div>
+          <button type="button" id="cancelEditBtn" class="text-btn" hidden>&#49688;&#51221; &#52712;&#49548;</button>
+        </div>
 
-          <div class="progress-section">
-            <div class="section-head">
-              <h3>&#45225;&#44592; &#51068;&#51221;&#54364;</h3>
-              <p>&#48156;&#51452; &#45225;&#44592;&#51068;&#51012; &#51068;&#51221;&#54364;&#50640; &#54364;&#49884;</p>
-            </div>
-            <div class="calendar-wrap">
-              <div class="calendar-head">
-                <button type="button" class="tab-btn" id="calendarPrevBtn">&#9664;</button>
-                <strong id="calendarTitle"></strong>
-                <button type="button" class="tab-btn" id="calendarNextBtn">&#9654;</button>
-              </div>
-              <div id="calendarWeekdays" class="calendar-weekdays"></div>
-              <div id="calendarGrid" class="calendar-grid"></div>
-            </div>
-          </div>
+        <form id="fabricForm" class="fabric-form">
+          <input type="hidden" id="fabricId" name="fabricId" />
 
-          <div class="stats-grid" id="statsGrid"></div>
+          <label>
+            &#44277;&#44553;&#50629;&#52404;
+            <input type="text" id="supplier" name="supplier" required />
+          </label>
 
-          <div class="progress-section">
-            <div class="section-head">
-              <h3 id="progressTitle">&#51089;&#50629; &#51652;&#54665;&#47456;</h3>
-              <p>&#52852;&#46300; &#49440;&#53469; &#51312;&#44148;&#50640; &#47582;&#52628;&#50612; &#54632;&#44760; &#48320;&#44221;</p>
-            </div>
-            <div id="progressBoard" class="progress-board"></div>
-          </div>
+          <label>
+            &#51204;&#54253;(mm)
+            <input type="text" id="widthMm" name="widthMm" inputmode="decimal" required />
+          </label>
 
-          <div class="progress-section">
-            <div class="section-head">
-              <h3 id="dashboardListTitle">&#51204;&#52404; &#48156;&#51452; &#47532;&#49828;&#53944;</h3>
-              <p>&#52852;&#46300;&#47484; &#45572;&#47476;&#47732; &#54644;&#45817; &#51312;&#44148;&#51032; &#48156;&#51452;&#47564; &#54364;&#49884;</p>
-            </div>
-            <div id="dashboardFilteredList" class="progress-board"></div>
-          </div>
-        </section>
+          <label>
+            &#48120;&#53552;(M)
+            <input type="text" id="lengthM" name="lengthM" inputmode="decimal" required />
+          </label>
+
+          <label>
+            &#50896;&#45800;&#47749;
+            <input type="text" id="fabricName" name="fabricName" required />
+          </label>
+
+          <label>
+            1SQ &#45800;&#44032;
+            <input type="text" id="sqUnitPrice" name="sqUnitPrice" inputmode="decimal" required />
+          </label>
+
+          <label>
+            &#44228;&#49328;&#45800;&#44032;
+            <input type="text" id="unitPrice" name="unitPrice" placeholder="&#51088;&#46041;&#44228;&#49328;" readonly />
+          </label>
+
+          <label>
+            &#50896;&#45800;&#50629;&#52404;
+            <input type="text" id="fabricCompany" name="fabricCompany" />
+          </label>
+
+          <label>
+            &#46160;&#44760;
+            <input type="text" id="thickness" name="thickness" />
+          </label>
+
+          <label>
+            &#49353;&#49345;
+            <input type="text" id="color" name="color" />
+          </label>
+
+          <label>
+            &#51216;&#52265;&#47141;(g)
+            <input type="text" id="adhesion" name="adhesion" />
+          </label>
+
+          <label>
+            &#51060;&#54805;&#47141;(g)
+            <input type="text" id="releaseForce" name="releaseForce" />
+          </label>
+
+          <label class="wide-field">
+            &#48708;&#44256;
+            <textarea id="note" name="note" rows="4"></textarea>
+          </label>
+
+          <button type="submit" class="primary-btn" id="saveBtn">&#46321;&#47197;</button>
+        </form>
       </section>
 
-      <section class="view-panel" id="ordersView">
-        <section class="panel panel-orders">
-          <div class="panel-head">
-            <div>
-              <p class="panel-kicker">Order Sheet</p>
-              <h2>&#48156;&#51452;&#49436; &#51077;&#47141;</h2>
-            </div>
+      <section class="panel list-panel">
+        <div class="panel-head list-head">
+          <div>
+            <p class="kicker">List</p>
+            <h2>&#46321;&#47197;&#46108; &#50896;&#45800;&#54364;</h2>
           </div>
+          <strong id="itemCount" class="count-chip">0&#44148;</strong>
+        </div>
 
-          <div id="adminLoginPanel" class="admin-login-panel">
-            <div class="section-head compact">
-              <h3>&#44288;&#47532;&#51088; &#47196;&#44536;&#51064;</h3>
-              <p>&#48156;&#51452; &#46321;&#47197; &#51204;&#50857;</p>
-            </div>
-            <form id="adminLoginForm" class="order-form">
-              <label>
-                Email
-                <input type="email" name="adminEmail" id="adminEmail" autocomplete="username" />
-              </label>
-              <label>
-                Password
-                <input type="password" name="adminPassword" id="adminPassword" autocomplete="current-password" />
-              </label>
-              <button type="submit" class="primary-btn">&#47196;&#44536;&#51064;</button>
-            </form>
-          </div>
+        <div class="filter-bar">
+          <input type="search" id="searchInput" placeholder="&#44277;&#44553;&#50629;&#52404;, &#50896;&#45800;&#50629;&#52404;, &#50896;&#45800;&#47749;, &#46160;&#44760;, &#49353;&#49345; &#44160;&#49353;" />
+          <select id="supplierFilter" aria-label="&#44277;&#44553;&#50629;&#52404; &#54596;&#53552;">
+            <option value="">&#51204;&#52404; &#44277;&#44553;&#50629;&#52404;</option>
+          </select>
+        </div>
 
-          <div id="adminSessionPanel" class="admin-session-panel" hidden>
-            <div class="session-box">
-              <div>
-                <strong id="adminSessionUser">admin</strong>
-                <p class="progress-meta">&#44288;&#47532;&#51088; &#47196;&#44536;&#51064; &#49345;&#53468;</p>
-              </div>
-              <div class="session-actions">
-                <button type="button" class="danger-action-btn" id="resetOrdersBtn">&#51204;&#52404; &#48156;&#51452; &#52488;&#44592;&#54868;</button>
-                <button type="button" class="end-btn" id="adminLogoutBtn">&#47196;&#44536;&#50500;&#50883;</button>
-              </div>
-            </div>
-          </div>
+        <div class="table-wrap mobile-card-table">
+          <table>
+            <thead>
+              <tr>
+                <th>&#44277;&#44553;&#50629;&#52404;</th>
+                <th>&#51204;&#54253;(mm)</th>
+                <th>&#48120;&#53552;(M)</th>
+                <th>&#50896;&#45800;&#47749;</th>
+                <th>1SQ &#45800;&#44032;</th>
+                <th>&#44228;&#49328;&#45800;&#44032;</th>
+                <th>&#49345;&#49464;&#51221;&#48372;</th>
+                <th>&#48708;&#44256;</th>
+                <th>&#44288;&#47532;</th>
+              </tr>
+            </thead>
+            <tbody id="fabricTableBody"></tbody>
+          </table>
+        </div>
 
-          <div id="ordersLockedNotice" class="empty-state">
-            &#44288;&#47532;&#51088; &#47196;&#44536;&#51064; &#54980; &#48156;&#51452; &#51077;&#47141;&#44284; &#54788;&#54889;&#51012; &#54869;&#51064;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;.
-          </div>
-
-          <div id="ordersContent" hidden>
-            <form id="orderForm" class="order-form">
-              <label>
-                &#48156;&#51452;&#51068;
-                <input type="date" name="orderDate" required />
-              </label>
-              <label>
-                &#50629;&#52404;&#47749;
-                <input type="text" name="company" list="companySuggestions" placeholder="&#50696;: &#54620;&#48731;&#49328;&#50629;" required />
-              </label>
-              <label>
-                &#51228;&#54408;&#47749;
-                <input type="text" name="product" list="productSuggestions" placeholder="&#50696;: &#50508;&#47336;&#48120;&#45768;&#50644; &#54532;&#47112;&#51076;" required />
-              </label>
-              <datalist id="companySuggestions"></datalist>
-              <datalist id="productSuggestions"></datalist>
-              <label>
-                &#48156;&#51452;&#49688;&#47049;
-                <input type="number" name="quantity" min="1" placeholder="&#50696;: 300" required />
-              </label>
-              <label class="check-row">
-                <input type="checkbox" name="paymentRequested" />
-                <span>&#51648;&#44553;&#50836;&#52397;</span>
-              </label>
-              <label>
-                &#51649;&#45225;/&#48156;&#49569;
-                <select name="deliveryType" required>
-                  <option value="&#51649;&#45225;">&#51649;&#45225;</option>
-                  <option value="&#48156;&#49569;">&#48156;&#49569;</option>
-                </select>
-              </label>
-              <label>
-                &#45225;&#44592;&#51068;
-                <input type="date" name="dueDate" required />
-              </label>
-              <label class="wide-field">
-                &#48708;&#44256;
-                <textarea name="orderNote" rows="3" placeholder="&#53945;&#51060;&#49324;&#54637;&#51060;&#45208; &#51452;&#51032;&#49324;&#54637;&#51012; &#51077;&#47141;"></textarea>
-              </label>
-              <button type="submit" class="primary-btn">&#48156;&#51452; &#46321;&#47197;</button>
-            </form>
-
-            <div id="orderEditPanel" class="order-edit-panel" hidden>
-              <div class="section-head compact">
-                <h3>&#48156;&#51452; &#49688;&#51221;</h3>
-                <p>&#45225;&#44592;&#51068;&#44284; &#49688;&#47049; &#48320;&#44221;</p>
-              </div>
-              <form id="orderEditForm" class="order-form">
-                <input type="hidden" name="editOrderId" id="editOrderId" />
-                <label>
-                  &#45225;&#44592;&#51068;
-                  <input type="date" name="editDueDate" id="editDueDate" required />
-                </label>
-                <label>
-                  &#48156;&#51452;&#49688;&#47049;
-                  <input type="number" name="editQuantity" id="editQuantity" min="1" required />
-                </label>
-                <label class="check-row">
-                  <input type="checkbox" name="editPaymentRequested" id="editPaymentRequested" />
-                  <span>&#51648;&#44553;&#50836;&#52397;</span>
-                </label>
-                <label>
-                  &#51649;&#45225;/&#48156;&#49569;
-                  <select name="editDeliveryType" id="editDeliveryType" required>
-                    <option value="&#51649;&#45225;">&#51649;&#45225;</option>
-                    <option value="&#48156;&#49569;">&#48156;&#49569;</option>
-                  </select>
-                </label>
-                <label class="wide-field">
-                  &#48708;&#44256;
-                  <textarea name="editOrderNote" id="editOrderNote" rows="3" placeholder="&#53945;&#51060;&#49324;&#54637;&#51060;&#45208; &#51452;&#51032;&#49324;&#54637;&#51012; &#51077;&#47141;"></textarea>
-                </label>
-                <div class="worker-actions">
-                  <button type="submit" class="primary-btn">&#49688;&#51221; &#51200;&#51109;</button>
-                  <button type="button" class="end-btn" id="cancelEditBtn">&#52712;&#49548;</button>
-                </div>
-              </form>
-            </div>
-
-            <div class="section-head compact">
-              <h3>&#46321;&#47197;&#46108; &#48156;&#51452;&#49436;</h3>
-              <p>&#45225;&#44592; 3&#51068; &#51060;&#45236; &#54637;&#47785;&#51008; &#48521;&#51008;&#49353;&#51004;&#47196; &#54364;&#49884;</p>
-            </div>
-
-            <div class="table-wrap orders-table-wrap mobile-card-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>&#48156;&#51452;&#51068;</th>
-                    <th>&#50629;&#52404;&#47749;</th>
-                    <th>&#51228;&#54408;&#47749;</th>
-                    <th>&#49688;&#47049;</th>
-                    <th>&#51648;&#44553;&#50836;&#52397;</th>
-                    <th>&#51649;&#45225;/&#48156;&#49569;</th>
-                    <th>&#45225;&#44592;&#51068;</th>
-                    <th>&#48708;&#44256;</th>
-                    <th>&#49345;&#53468;</th>
-                    <th>&#44288;&#47532;</th>
-                  </tr>
-                </thead>
-                <tbody id="ordersTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <section class="view-panel" id="workerView">
-        <section class="panel panel-worker">
-          <div class="panel-head">
-            <div>
-              <p class="panel-kicker">Mobile Worker</p>
-              <h2>&#51089;&#50629;&#51088; &#51077;&#47141;</h2>
-            </div>
-          </div>
-
-          <form id="workerForm" class="worker-form">
-            <label>
-              &#51089;&#50629;&#51088;&#47749;
-              <input type="text" name="workerName" placeholder="&#50696;: &#44608;&#52384;&#49688;" required />
-            </label>
-            <label>
-              &#51109;&#48708;&#47749;
-              <input type="text" name="machineName" placeholder="&#50696;: 1&#54840;&#44592;" required />
-            </label>
-            <label>
-              &#51089;&#50629; &#49440;&#53469;
-              <select id="orderSelect" name="orderId" required></select>
-            </label>
-            <div class="worker-actions">
-              <button type="button" class="start-btn" id="startWorkBtn">&#51089;&#50629; &#49884;&#51089;</button>
-              <button type="button" class="end-btn" id="pauseWorkBtn">&#51089;&#50629; &#51473;&#51648;</button>
-              <button type="button" class="end-btn" id="endWorkBtn">&#51089;&#50629; &#51333;&#47308;</button>
-            </div>
-            <label>
-              &#51089;&#50629;&#49688;&#47049;
-              <input type="number" name="workQty" id="workQty" min="0" placeholder="&#50696;: 80" disabled />
-            </label>
-            <label>
-              &#51089;&#50629;&#53440;&#49688;
-              <input type="number" name="workHitQty" id="workHitQty" min="0" placeholder="&#50696;: 160" disabled />
-            </label>
-            <label>
-              &#51089;&#50629; &#51473;&#51648; &#49324;&#50976;
-              <input type="text" name="pauseReason" id="pauseReason" placeholder="&#50696;: &#51088;&#51116; &#45824;&#44592;" disabled />
-            </label>
-            <button type="button" class="primary-btn secondary-btn" id="savePauseBtn" disabled>&#51473;&#51648; &#51200;&#51109;</button>
-            <label>
-              &#50724;&#45720; &#51089;&#50629;&#49688;&#47049;
-              <input type="number" name="productionQty" id="productionQty" min="0" placeholder="&#50696;: 120" disabled />
-            </label>
-            <label>
-              &#50724;&#45720; &#51089;&#50629;&#53440;&#49688;
-              <input type="number" name="totalHitQty" id="totalHitQty" min="0" placeholder="&#50696;: 240" disabled />
-            </label>
-            <button type="button" class="primary-btn secondary-btn" id="saveProductionBtn" disabled>&#49373;&#49328;&#49688; &#51077;&#47141; &#50756;&#47308;</button>
-          </form>
-
-          <div id="workerAlert" class="worker-alert" hidden></div>
-
-          <div id="workerLiveStatus" class="worker-live-status"></div>
-
-          <div class="section-head compact">
-            <h3>&#51089;&#50629; &#51060;&#47141;</h3>
-            <p>&#49828;&#47560;&#53944;&#54256;&#50640;&#49436;&#46020; &#53360; &#48260;&#53948;&#51004;&#47196; &#49789;&#44172; &#51077;&#47141;</p>
-          </div>
-
-          <button type="button" class="tab-btn history-toggle-btn" id="historyToggleBtn">&#51089;&#50629; &#51060;&#47141; &#48372;&#44592;</button>
-          <div id="activityFeed" class="activity-feed"></div>
-        </section>
-      </section>
-
-      <section class="view-panel" id="adminView">
-        <section class="panel panel-admin">
-          <div class="panel-head">
-            <div>
-              <p class="panel-kicker">Admin Center</p>
-              <h2>&#44288;&#47532;&#51088; &#54788;&#54889; &#44288;&#47532;</h2>
-            </div>
-          </div>
-
-          <div id="adminPageLocked" class="empty-state">
-            <div class="admin-lock-box">
-              <p>&#44288;&#47532;&#51088; &#54168;&#51060;&#51648;&#45716; &#47196;&#44536;&#51064; &#54980; &#54869;&#51064;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;.</p>
-              <form id="adminPageLoginForm" class="order-form compact-form">
-                <label>
-                  Email
-                  <input type="email" name="adminEmail" autocomplete="username" />
-                </label>
-                <label>
-                  Password
-                  <input type="password" name="adminPassword" autocomplete="current-password" />
-                </label>
-                <button type="submit" class="primary-btn">&#47196;&#44536;&#51064;</button>
-              </form>
-            </div>
-          </div>
-
-          <div id="adminPageContent" hidden>
-            <div class="admin-month-bar">
-              <label>
-                &#51312;&#54924; &#50900;
-                <input type="month" id="adminMonthInput" />
-              </label>
-            </div>
-
-            <div class="admin-grid">
-              <section class="admin-block">
-                <div class="section-head compact">
-                  <h3>&#51109;&#48708; &#44032;&#46041;&#50984;</h3>
-                  <p>&#51089;&#50629;&#51088; &#51077;&#47141; &#45936;&#51060;&#53552; &#44592;&#51456; &#51665;&#44228;</p>
-                </div>
-                <div id="equipmentList" class="progress-board"></div>
-              </section>
-
-              <section class="admin-block">
-                <div class="section-head compact">
-                  <h3>&#44552;&#54805; &#53440;&#49688; &#44288;&#47532;</h3>
-                  <p>&#49373;&#49328;&#49688;&#47049;&#51012; &#53440;&#49688;&#47196; &#44036;&#51452;&#54620; &#50836;&#50557;</p>
-                </div>
-                <div id="moldList" class="progress-board"></div>
-              </section>
-            </div>
-
-            <div class="admin-grid admin-grid-wide">
-              <section class="admin-block">
-                <div class="section-head compact">
-                  <h3>&#49373;&#49328;&#51068;&#51648;</h3>
-                  <p>&#51089;&#50629;&#51088;&#44032; &#51077;&#47141;&#54620; &#51060;&#47141; &#44592;&#51456; &#51068;&#51648;</p>
-                </div>
-                <div id="journalList" class="activity-feed"></div>
-              </section>
-
-              <section class="admin-block">
-                <div class="section-head compact">
-                  <h3>&#51089;&#50629;&#51088; &#51089;&#50629; &#54952;&#50984; &#45936;&#51060;&#53552;</h3>
-                  <p>&#45572;&#51201; &#51089;&#50629;&#49884;&#44036;, &#49373;&#49328;&#49688;, &#49884;&#44036;&#45817; &#54952;&#50984;</p>
-                </div>
-                <div id="workerEfficiencyList" class="progress-board"></div>
-              </section>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <section class="view-panel" id="shippingView">
-        <section class="panel panel-orders">
-          <div class="panel-head">
-            <div>
-              <p class="panel-kicker">Shipping</p>
-              <h2>&#52636;&#54616; &#54869;&#51064;</h2>
-            </div>
-          </div>
-
-          <div class="section-head compact">
-            <h3>&#45225;&#44592; &#44592;&#51456; &#52636;&#54616; &#54788;&#54889;</h3>
-            <p>&#52636;&#54616; &#50668;&#48512;&#50752; &#52636;&#54616;&#51068;&#51012; &#54869;&#51064;</p>
-          </div>
-
-          <div class="admin-month-bar">
-            <div class="worker-actions shipping-filter-bar">
-              <button type="button" class="tab-btn active" id="shippingFilterAllBtn">&#51204;&#52404;</button>
-              <button type="button" class="tab-btn" id="shippingFilterPendingBtn">&#48120;&#52636;&#54616;</button>
-              <button type="button" class="tab-btn" id="shippingFilterDoneBtn">&#52636;&#54616;&#50756;&#47308;</button>
-            </div>
-            <label>
-              &#44160;&#49353;
-              <input type="text" id="shippingSearchInput" placeholder="&#50629;&#52404;&#47749; &#46608;&#45716; &#51228;&#54408;&#47749; &#44160;&#49353;" />
-            </label>
-          </div>
-
-          <div id="shippingSummary" class="stats-grid"></div>
-
-          <div class="table-wrap shipping-table-wrap mobile-card-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>&#50629;&#52404;&#47749;</th>
-                  <th>&#51228;&#54408;&#47749;</th>
-                  <th>&#45225;&#44592;&#51068;</th>
-                  <th>&#49688;&#47049;</th>
-                  <th>&#51089;&#50629; &#49345;&#53468;</th>
-                  <th>&#52636;&#54616; &#49345;&#53468;</th>
-                  <th>&#52636;&#54616;&#51068;</th>
-                  <th>&#52636;&#54616; &#47700;&#47784;</th>
-                  <th>&#44288;&#47532;</th>
-                </tr>
-              </thead>
-              <tbody id="shippingTableBody"></tbody>
-            </table>
-          </div>
-        </section>
+        <div id="emptyState" class="empty-state" hidden>
+          &#46321;&#47197;&#46108; &#50896;&#45800; &#51221;&#48372;&#44032; &#50630;&#49845;&#45768;&#45796;.
+        </div>
       </section>
     </main>
-
-    <footer class="page-footer">
-      <img src="company-logo.jpg" alt="&#51652;&#55141;&#47924;&#50669; &#47196;&#44256;" class="company-logo footer-logo" />
-    </footer>
   </div>
 
-  <div id="confirmModal" class="modal-backdrop" hidden>
-    <div class="modal-card">
-      <h3>&#44221;&#44256;</h3>
-      <p>&#52488;&#44592;&#54868;&#47484; &#54616;&#49884;&#44192;&#49845;&#45768;&#44620;?</p>
-      <div class="modal-actions">
-        <button type="button" class="danger-action-btn" id="confirmYesBtn">&#50696;</button>
-        <button type="button" class="tab-btn" id="confirmNoBtn">&#50500;&#45768;&#50724;</button>
+  <div class="modal-backdrop" id="historyModal" hidden>
+    <section class="history-modal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="panel-head">
+        <div>
+          <p class="kicker">History</p>
+          <h2 id="historyModalTitle">&#49688;&#51221;&#51060;&#47141;</h2>
+        </div>
+        <button type="button" id="historyCloseBtn" class="text-btn">&#45803;&#44592;</button>
       </div>
-    </div>
-  </div>
-
-  <div id="calendarDetailModal" class="modal-backdrop" hidden>
-    <div class="modal-card">
-      <h3 id="calendarDetailTitle">&#45225;&#44592; &#49345;&#49464;</h3>
-      <div id="calendarDetailBody" class="activity-feed"></div>
-      <div class="modal-actions">
-        <button type="button" class="tab-btn" id="calendarDetailCloseBtn">&#45803;&#44592;</button>
-      </div>
-    </div>
+      <div id="historyModalBody" class="history-list"></div>
+    </section>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20260506-01"></script>
-  <script src="app.js?v=20260506-01"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-
