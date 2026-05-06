@@ -371,7 +371,7 @@ td:nth-child(9) {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .icon-btn,
@@ -381,9 +381,9 @@ td:nth-child(9) {
   align-items: center;
   justify-content: center;
   min-width: 0;
-  min-height: 36px;
-  padding: 7px 8px;
-  font-size: 0.82rem;
+  min-height: 34px;
+  padding: 6px 5px;
+  font-size: 0.74rem;
   font-weight: 900;
   line-height: 1;
   text-align: center;
