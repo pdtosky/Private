@@ -600,6 +600,9 @@ td:nth-child(9) {
   }
 
   .mobile-card-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
     margin-bottom: 12px;
     border: 1px solid var(--line);
     border-radius: 18px;
@@ -609,12 +612,12 @@ td:nth-child(9) {
 
   .mobile-card-table td {
     display: grid;
-    grid-template-columns: 112px minmax(0, 1fr);
-    gap: 14px;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    align-items: start;
     border-bottom: 0;
     border-right: 0;
-    padding: 9px 0;
+    padding: 0;
     text-align: left;
     font-size: 1rem;
   }
@@ -632,11 +635,17 @@ td:nth-child(9) {
   }
 
   .mobile-card-table .detail-cell {
+    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
     text-align: left;
+    padding-top: 2px;
+  }
+
+  .mobile-card-table .detail-cell::before {
+    flex: 0 0 100%;
   }
 
   .detail-cell span {
@@ -645,7 +654,17 @@ td:nth-child(9) {
     white-space: normal;
   }
 
+  .mobile-card-table .note-cell {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding-top: 2px;
+  }
+
   .mobile-card-table td:last-child {
+    grid-column: 1 / -1;
     grid-template-columns: 1fr;
   }
 
