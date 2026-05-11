@@ -602,22 +602,24 @@ td:nth-child(9) {
   .mobile-card-table tr {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 14px;
+    gap: 8px;
     margin-bottom: 12px;
     border: 1px solid var(--line);
     border-radius: 18px;
     background: #fff;
-    padding: 16px 14px;
+    padding: 12px;
   }
 
   .mobile-card-table td {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 5px;
+    gap: 4px;
     align-items: start;
-    border-bottom: 0;
-    border-right: 0;
-    padding: 0;
+    min-height: 64px;
+    border: 1px solid rgba(28, 57, 82, 0.14);
+    border-radius: 13px;
+    background: #fbfefd;
+    padding: 9px 10px;
     text-align: left;
     font-size: 1rem;
   }
@@ -625,7 +627,7 @@ td:nth-child(9) {
   .mobile-card-table td::before {
     content: attr(data-label);
     color: var(--sub);
-    font-size: 0.92rem;
+    font-size: 0.82rem;
     font-weight: 900;
   }
 
@@ -641,7 +643,7 @@ td:nth-child(9) {
     gap: 6px;
     align-items: center;
     text-align: left;
-    padding-top: 2px;
+    min-height: 0;
   }
 
   .mobile-card-table .detail-cell::before {
@@ -660,12 +662,16 @@ td:nth-child(9) {
     grid-template-columns: 76px minmax(0, 1fr);
     gap: 10px;
     align-items: center;
-    padding-top: 2px;
+    min-height: 0;
   }
 
   .mobile-card-table td:last-child {
     grid-column: 1 / -1;
     grid-template-columns: 1fr;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
   }
 
   .mobile-card-table td:last-child::before {
